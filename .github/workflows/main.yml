@@ -1,0 +1,37 @@
+name: Deploy to Yandex Object Storage
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # 1. Установка Bun
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      # 2. Установка зависимостей через Bun
+      - name: Install dependencies
+        run: bun install
+
+      # 3. Сборка статического сайта
+      - name: Build static site
+        run: bun run rspress build  # или ваша команда сборки
+
+      # 4. Настройка AWS CLI для Yandex Object Storage
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-cli@v5
+        with:
+          access-key-id: ${{ secrets.YC_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          endpoint-url: https://storage.yandexcloud.net
+
+      # 5. Синхронизация собранной статики с бакетом
+      - name: Sync to bucket
+        run: aws s3 sync ./dist/ s3://${{ secrets.BUCKET_NAME }}/ --delete
