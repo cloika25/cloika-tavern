@@ -24,11 +24,14 @@ jobs:
       - name: Build project
         run: bun run build
 
-      # Шаг 4. Выкладка в Yandex Cloud (в бакет cloika-tavern)
-      - name: Deploy to Yandex Cloud Storage
-        uses: yandex-cloud/yc-actions/storage-upload@v1
-        with:
-          service-account-key: ${{ secrets.YC_SECRET_ACCESS_KEY }}
-          src: doc_build/
-          dst: s3://cloika-tavern/
-          recursive: true
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo 'source /home/runner/.yandex-cloud/completion.bash' >> ~/.bashrc
+
+      - name: Authenticate with Yandex Cloud
+        run: echo "${{ secrets.YC_SECRET_ACCESS_KEY }}" > key.json
+        && yc config set service-account-key key.json
+
+      - name: Upload to Storage
+        run: yc storage cp --recursive doc_build/* s3://cloika-tavern/
