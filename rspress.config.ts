@@ -18,4 +18,22 @@ export default defineConfig({
       },
     ],
   },
+  base: "/",
+  outDir: "doc_build",
+  builderConfig: {
+    output: {
+      assetPrefix: "/",
+    },
+    tools: {
+      rspack: {
+        resolve: {
+          fallback: {
+            // Provide fallbacks for node modules that might cause issues
+            path: false,
+            fs: false,
+          },
+        },
+      },
+    },
+  },
 });
