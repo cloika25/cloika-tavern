@@ -27,14 +27,26 @@ jobs:
       - name: Build project
         run: bun run build
 
-      # Установка yc CLI
       - name: Install Yandex Cloud CLI
         run: |
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          # Установка (подавляем вывод инструкций)
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash > /dev/null 2>&1
+
+          # Применяем изменения в PATH
           source $HOME/.bashrc
-          which yc
+
+          # Проверка установки
+          which yc || { echo "yc not found!"; exit 1; }
           yc --version
+
+      - name: Authenticate and Upload
+        run: |
+          # Сохраняем ключ сервисного аккаунта
           echo "${{ secrets.YC_SERVICE_ACCOUNT_KEY }}" > key.json
+
+          # Настройка YC CLI
           yc config set service-account-key key.json
-          yc config list  # проверка конфигурации
+          yc config list
+
+          # Загрузка файлов
           yc storage cp --recursive doc_build/* s3://cloika-tavern/
