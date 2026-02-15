@@ -27,31 +27,21 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Install Yandex Cloud CLI
+      # Настройка AWS CLI для Yandex Cloud S3
+      - name: Configure AWS CLI
         run: |
-          # 1. Определяем версию (можно заменить на конкретную, например 0.192.0)
-          VERSION=$(curl -s https://api.github.com/repos/yandex-cloud/yc-cli/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+          aws configure set aws_access_key_id ${{ secrets.YC_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          aws configure set default.region ru-central1
+          aws configure set preview.s3 true
 
-          # 2. Скачиваем архив
-          curl -o yc-cli.tar.gz -L "https://github.com/yandex-cloud/yc-cli/releases/download/${VERSION}/yc-cli_${VERSION}_linux_amd64.tar.gz"
-
-          # 3. Распаковываем в домашнюю директорию
-          tar -xzf yc-cli.tar.gz -C $HOME/.yandex-cloud --strip-components=1
-
-          # 4. Добавляем в PATH
-          echo "$HOME/.yandex-cloud" >> $GITHUB_PATH
-
-          # 5. Проверяем
-          yc --version
-
-      - name: Authenticate and Upload
-        run: |
-          # Сохраняем ключ сервисного аккаунта
-          echo "${{ secrets.YC_SERVICE_ACCOUNT_KEY }}" > key.json
-
-          # Настройка YC CLI
-          yc config set service-account-key key.json
-          yc config list
-
-          # Загрузка файлов
-          yc storage cp --recursive doc_build/* s3://cloika-tavern/
+      # Выкладка в Yandex Cloud Storage
+      - name: Upload to Yandex Cloud Storage (S3)
+        uses: aws-actions/s3-sync@v1
+        with:
+          args: --acl public-read --sse AES256 # опционально: настройки безопасности
+          source: doc_build/
+          destination: s3://cloika-tavern/
+          aws-region: ru-central1
+          s3-endpoint: storage.yandexcloud.net
+          no-progress: true
