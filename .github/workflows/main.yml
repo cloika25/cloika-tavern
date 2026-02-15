@@ -30,8 +30,7 @@ jobs:
           echo 'source /home/runner/.yandex-cloud/completion.bash' >> ~/.bashrc
 
       - name: Authenticate with Yandex Cloud
-        run: echo "${{ secrets.YC_SECRET_ACCESS_KEY }}" > key.json
-        && yc config set service-account-key key.json
+        run: echo "${{ secrets.YC_SECRET_ACCESS_KEY }}" > key.json && yc config set service-account-key key.json
 
       - name: Upload to Storage
         run: yc storage cp --recursive doc_build/* s3://cloika-tavern/
