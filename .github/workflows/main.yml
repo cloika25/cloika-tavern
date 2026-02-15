@@ -28,7 +28,7 @@ jobs:
         run: bun run build
 
       - name: S3 Sync
-        uses: jakejarvis/s3-sync-action@v0.7.1 # Фиксированная версия!
+        uses: jakejarvis/s3-sync-action@v0.5.1 # Фиксированная версия!
         with:
           args: --acl public-read --sse AES256 --delete
           aws-secret-access-key: ${{ secrets.YC_SECRET_ACCESS_KEY }}
