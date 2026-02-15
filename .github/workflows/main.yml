@@ -27,31 +27,13 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Upload files to Object Storage
-        uses: yc-actions/yc-obj-storage-upload@v3
+      - name: S3 Sync
+        uses: jakejarvis/s3-sync-action@v0.7.1 # Фиксированная версия!
         with:
-          yc-sa-json-credentials: ${{ secrets.YC_SECRET_ACCESS_KEY }}
-          bucket: ${{ secrets.BUCKET_NAME }}
-          root: ./doc_build
-          include: |
-            **/*
-            *
-
-      # Настройка AWS CLI для Yandex Cloud S3
-      - name: Configure AWS CLI
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.YC_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.YC_SECRET_ACCESS_KEY }}
-          aws configure set default.region ru-central1
-          aws configure set preview.s3 true
-
-      # Выкладка в Yandex Cloud Storage
-      - name: Upload to Yandex Cloud Storage (S3)
-        uses: aws-actions/s3-sync@v1
-        with:
-          args: --acl public-read --sse AES256 # опционально: настройки безопасности
-          source: doc_build/
-          destination: s3://cloika-tavern/
-          aws-region: ru-central1
-          s3-endpoint: storage.yandexcloud.net
-          no-progress: true
+          args: --acl public-read --sse AES256 --delete
+          aws-secret-access-key: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.YC_ACCESS_KEY_ID }}
+          source-dir: "doc_build/"
+          destination-url: "s3://${{secrets.BUCKET_NAME}}/"
+          aws-region: "ru-central1"
+          s3-endpoint: "storage.yandexcloud.net"
