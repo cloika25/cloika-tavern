@@ -31,11 +31,10 @@ jobs:
         uses: jakejarvis/s3-sync-action@v0.5.1 # Фиксированная версия!
         with:
           args: --acl public-read --sse AES256 --delete
-          aws-secret-access-key: ${{ secrets.YC_SECRET_ACCESS_KEY }}
-          aws-access-key-id: ${{ secrets.YC_ACCESS_KEY_ID }}
-          source-dir: "doc_build/"
-          destination-url: "s3://${{secrets.BUCKET_NAME}}/"
-          aws-region: "ru-central1"
-          s3-endpoint: "storage.yandexcloud.net"
         env:
           AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          SOURCE_DIR: "doc_build/"
+          S3_ENDPOINT: "storage.yandexcloud.net"
+          AWS_REGION: "ru-central1"
