@@ -16,6 +16,13 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Debug Check repository structure
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          echo "Files in root:"
+          find . -maxdepth 1 -type f -printf "%f\n"
+
       # Шаг 2. Установка зависимостей
       - name: Install dependencies
         run: bun install
