@@ -37,3 +37,5 @@ jobs:
           destination-url: "s3://${{secrets.BUCKET_NAME}}/"
           aws-region: "ru-central1"
           s3-endpoint: "storage.yandexcloud.net"
+        env:
+          AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
