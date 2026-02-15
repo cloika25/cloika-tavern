@@ -30,7 +30,7 @@ jobs:
       - name: S3 Sync
         uses: yc-actions/yc-obj-storage-upload@v3
         with:
-          yc-sa-json-credentials: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          yc-sa-json-credentials: ${{ secrets.YC_SA_CRED_JSON }}
           bucket: ${{ secrets.BUCKET_NAME }}
           root: ./doc_build
           include: |
