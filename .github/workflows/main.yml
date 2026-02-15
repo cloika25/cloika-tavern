@@ -27,6 +27,16 @@ jobs:
       - name: Build project
         run: bun run build
 
+      - name: Upload files to Object Storage
+        uses: yc-actions/yc-obj-storage-upload@v3
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.BUCKET_NAME }}
+          root: ./doc_build
+          include: |
+            **/*
+            *
+
       # Настройка AWS CLI для Yandex Cloud S3
       - name: Configure AWS CLI
         run: |
