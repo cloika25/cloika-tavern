@@ -10,22 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       # Шаг 1. Установка Bun
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      - name: Debug Check repository structure
+      - name: Debug- Check out directory
         run: |
-          echo "Current directory: $(pwd)"
+          echo "Current dir: $(pwd)"
           ls -la
-          echo "Files in root:"
-          find . -maxdepth 1 -type f -printf "%f\n"
+          find . -type f -name "package.json" -print
 
       # Шаг 2. Установка зависимостей
       - name: Install dependencies
-        run: bun install
+        run: bun ci
 
       # Шаг 3. Сборка проекта
       - name: Build project
