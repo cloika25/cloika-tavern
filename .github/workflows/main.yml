@@ -29,18 +29,19 @@ jobs:
 
       - name: Install Yandex Cloud CLI
         run: |
-          # 1 Установка (подавляем вывод инструкций)
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash > /dev/null 2>&1
+          # 1. Определяем версию (можно заменить на конкретную, например 0.192.0)
+          VERSION=$(curl -s https://api.github.com/repos/yandex-cloud/yc-cli/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-          # 2. Явно добавляем путь в PATH (критично для GitHub Actions)
-          echo "$HOME/.yandex-cloud/bin" >> $GITHUB_PATH
+          # 2. Скачиваем архив
+          curl -o yc-cli.tar.gz -L "https://github.com/yandex-cloud/yc-cli/releases/download/${VERSION}/yc-cli_${VERSION}_linux_amd64.tar.gz"
 
-          # 3. Проверяем доступность yc
-          if ! command -v yc &> /dev/null; then
-            echo "❌ yc CLI not found in PATH!"
-            exit 1
-          fi
-          # 4. Выводим версию для подтверждения
+          # 3. Распаковываем в домашнюю директорию
+          tar -xzf yc-cli.tar.gz -C $HOME/.yandex-cloud --strip-components=1
+
+          # 4. Добавляем в PATH
+          echo "$HOME/.yandex-cloud" >> $GITHUB_PATH
+
+          # 5. Проверяем
           yc --version
 
       - name: Authenticate and Upload
