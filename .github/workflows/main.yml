@@ -28,12 +28,10 @@ jobs:
         run: bun run build
 
       - name: S3 Sync
-        uses: jakejarvis/s3-sync-action@v0.5.1 # Фиксированная версия!
+        uses: yc-actions/yc-obj-storage-upload@v3
         with:
-          args: --acl public-read --sse AES256 --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.BUCKET_NAME }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
-          SOURCE_DIR: "doc_build/"
-          AWS_S3_ENDPOINT: "https://storage.yandexcloud.net"
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          bucket: ${{ secrets.BUCKET_NAME }}
+          root: ./doc_build
+          include: |
+            **
